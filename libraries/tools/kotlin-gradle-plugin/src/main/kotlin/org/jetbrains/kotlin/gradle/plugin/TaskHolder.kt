@@ -21,32 +21,24 @@ import org.gradle.api.Project
 
 
 /**
- * Reference to a org.gradle.api.Task necessary in order to support flexible creation of tasks.
+ * Reference to a org.gradle.api.Task or  org.gradle.api.TaskProvider necessary in order to support flexible creation of tasks.
  * For gradle versions < 4.9 tasks are created meanwhile for gradle with version >= 4.9 tasks are registered
  */
-open class TaskHolder<T: Task>(val task: T?, val project: Project?) {
+interface TaskHolder<T : Task> {
 
     /**
      * Returns Task itself if task was created or TaskProvider<Task> if task was registered.
      */
-    open fun getTaskOrProvider(): Any = task!!
+    fun getTaskOrProvider(): Any
 
     /**
      * Returns instance of task. If task created using lazy api, it will be instantiated
      */
-    open fun doGetTask() : T {
-        return task!!
-    }
+    fun doGetTask(): T
 
-    override fun toString(): String {
-        return "TaskHolder instance: [className: ${javaClass.name}, holded task: '${doGetTask().name}']"
-    }
 
     /**
      * Invokes task configuration. If task was registered the configuration action is added but not invoked
      */
-    open fun configure(action: (T) -> (Unit)) {
-        with(task!!, action)
-    }
-
+    fun configure(action: (T) -> (Unit))
 }
