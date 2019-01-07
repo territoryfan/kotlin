@@ -20,6 +20,7 @@ import com.google.common.collect.LinkedListMultimap
 import org.jetbrains.kotlin.codegen.optimization.common.isMeaningful
 import org.jetbrains.org.objectweb.asm.tree.*
 import java.util.*
+import kotlin.collections.HashSet
 
 abstract class CoveringTryCatchNodeProcessor(parameterSize: Int) {
     val tryBlocksMetaInfo: IntervalMetaInfo<TryCatchBlockNodeInfo> = IntervalMetaInfo(this)
@@ -114,7 +115,7 @@ class IntervalMetaInfo<T : SplittableInterval<T>>(private val processor: Coverin
     }
 
     fun splitAndRemoveCurrentIntervals(by: Interval, keepStart: Boolean) {
-        currentIntervals.map { splitAndRemoveInterval(it, by, keepStart) }
+        HashSet(currentIntervals).forEach { splitAndRemoveInterval(it, by, keepStart) }
     }
 
     fun processCurrent(curIns: LabelNode, directOrder: Boolean) {
