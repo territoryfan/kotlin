@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.testFramework.LightVirtualFileBase
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
@@ -59,7 +60,10 @@ class ScriptContentLoader(private val project: Project) {
     }
 
     class BasicScriptContents(virtualFile: VirtualFile, getAnnotations: () -> Iterable<Annotation>) : ScriptContents {
-        override val file: File = File(virtualFile.path)
+        override val file: File =
+            if (virtualFile is LightVirtualFileBase) File(virtualFile.name) // LightVirtualFile places all files into root
+            else File(virtualFile.path)
+
         override val annotations: Iterable<Annotation> by lazy(LazyThreadSafetyMode.PUBLICATION) { getAnnotations() }
         override val text: CharSequence? by lazy(LazyThreadSafetyMode.PUBLICATION) { virtualFile.inputStream.reader(charset = virtualFile.charset).readText() }
     }
