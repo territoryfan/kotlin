@@ -7,6 +7,7 @@
 
 package kotlin.script.experimental.api
 
+import kotlin.reflect.KClass
 import kotlin.script.experimental.util.PropertiesCollection
 
 interface ScriptEvaluationConfigurationKeys
@@ -46,11 +47,19 @@ val ScriptEvaluationConfigurationKeys.providedProperties by PropertiesCollection
  */
 val ScriptEvaluationConfigurationKeys.constructorArgs by PropertiesCollection.key<List<Any?>>()
 
+val ScriptEvaluationConfigurationKeys.scriptsSharingMap by PropertiesCollection.key<MutableMap<KClass<*>, Any>>()
+
+fun ScriptEvaluationConfiguration.Builder.enableScriptsSharing() {
+    this {
+        scriptsSharingMap(HashMap())
+    }
+}
+
 /**
  * The script evaluation result value
  */
 sealed class ResultValue {
-    class Value(val name: String, val value: Any?, val type: String) : ResultValue() {
+    class Value(val name: String, val value: Any?, val type: String, val scriptInstance: Any) : ResultValue() {
         override fun toString(): String = "$name: $type = $value"
     }
 
